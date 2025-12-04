@@ -9,7 +9,7 @@ from plotter import show_volume, show_1rm, show_fatigue, show_lpr, check_plateau
 
 
 def start_ui():
-    W, H = 1280, 720
+    W, H = 1250, 720
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("blue")
 
@@ -27,7 +27,7 @@ def start_ui():
     L = ctk.CTkFrame(app, width=400, height=600, corner_radius=22, fg_color=("white", "gray12"))
     L.place(x=20, y=70)
 
-    R = ctk.CTkFrame(app, width=600, height=600, corner_radius=22, fg_color=("white", "gray12"))
+    R = ctk.CTkFrame(app, width=600, height=650, corner_radius=22, fg_color=("white", "gray12"))
     R.place(x=430, y=70) 
 
     # panel kiri
@@ -104,10 +104,9 @@ def start_ui():
 
     flt = ctk.StringVar()
 
-    filter_entry = ctk.CTkEntry(ctrl, textvariable=flt, placeholder_text="Filter by exercise", placeholder_text_color="white", width=300, height=36)
-    filter_entry.grid(row=0, column=0, padx=(0, 12), sticky="ew")
-
-    app.after(200, lambda: app.focus())
+    filter_combo = ttk.Combobox(ctrl, textvariable=flt, width=40, height=30, font=("Segoe UI", 11), state="readonly")
+    filter_combo.grid(row=0, column=0, padx=(0, 12), sticky="ew")
+    
     ctrl.grid_columnconfigure(0, weight=1)
 
     buttons = [
@@ -147,9 +146,15 @@ def start_ui():
     scrollbar.pack(side="right", fill="y")
     tree.configure(yscrollcommand=scrollbar.set)
 
+    def populate_exercise_dropdown():
+        """Extract unique exercises from loaded entries and update combobox values."""
+        exercises = sorted(set(e.ex for e in mgr.entries if e.ex))
+        filter_combo['values'] = [""] + exercises  # Add empty option at the start
+
     def refresh():
         tree.delete(*tree.get_children())
         mgr.load()
+        populate_exercise_dropdown()  # Update dropdown when data refreshes
         for e in mgr.entries:
             vol = e.volume()
             prev = mgr.get_prev_entry(e.ex, e)
