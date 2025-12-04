@@ -127,18 +127,19 @@ def start_ui():
     tv_container.pack_propagate(False)
 
     # isi tabel
-    cols = ("date", "exercise", "sets", "reps", "weight", "volume", "rir", "trend")
+    cols = ("date", "exercise", "sets", "reps", "weight", "volume", "rir", "notes", "trend")
     tree = ttk.Treeview(tv_container, columns=cols, show="headings", height=18)
 
     # setup kolom
     col_config = {
-        "exercise": (170, "w"),
-        "volume": (90, "center"),
+        "exercise": (120, "w"),
+        "volume": (80, "center"),
+        "notes": (150, "w"),
         "trend": (70, "center"),
     }
     for col in cols:
         tree.heading(col, text=col.capitalize())
-        width, anchor = col_config.get(col, (90, "center"))
+        width, anchor = col_config.get(col, (80, "center"))
         tree.column(col, width=width, anchor=anchor)
 
     tree.pack(fill="both", expand=True, side="left")
@@ -162,7 +163,7 @@ def start_ui():
                 trend = "–"
             else:
                 trend = "▲" if vol > prev.volume() else "▼" if vol < prev.volume() else "➖"
-            row = [e.d, e.ex, e.sets, e.reps, e.weight, vol, e.rir, trend]
+            row = [e.d, e.ex, e.sets, e.reps, e.weight, vol, e.rir, e.notes, trend]
             tree.insert("", "end", values=row)
 
     refresh()
